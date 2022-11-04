@@ -33,7 +33,7 @@ resource "aws_s3_bucket_replication_configuration" "primary-backend-bucket-repli
     }
 
     destination {
-      bucket        = aws_s3_bucket.secondary-backend-bucket.arn
+      bucket        = aws_s3_bucket.secondary-backend-bucket[0].arn
       storage_class = "STANDARD"
       encryption_configuration {
         replica_kms_key_id = aws_kms_key.encrypt-secondary-region[0].arn
@@ -90,7 +90,7 @@ resource "aws_s3_bucket" "secondary-backend-bucket" {
 resource "aws_s3_bucket_versioning" "secondary-backend-bucket-versioning" {
   count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
-  bucket   = aws_s3_bucket.secondary-backend-bucket.id
+  bucket   = aws_s3_bucket.secondary-backend-bucket[0].id
   versioning_configuration {
     status = "Enabled"
   }
@@ -99,7 +99,7 @@ resource "aws_s3_bucket_versioning" "secondary-backend-bucket-versioning" {
 resource "aws_s3_bucket_server_side_encryption_configuration" "secondary-backend-bucket-encryption" {
   count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
-  bucket   = aws_s3_bucket.secondary-backend-bucket.id
+  bucket   = aws_s3_bucket.secondary-backend-bucket[0].id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -112,7 +112,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "secondary-backend
 resource "aws_s3_bucket_acl" "secondary-backend-bucket-acl" {
   count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
-  bucket   = aws_s3_bucket.secondary-backend-bucket.id
+  bucket   = aws_s3_bucket.secondary-backend-bucket[0].id
   acl      = "private"
 }
 
@@ -122,7 +122,7 @@ resource "aws_s3_bucket_public_access_block" "secondary-backend-bucket" {
   count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
 
-  bucket = aws_s3_bucket.secondary-backend-bucket.id
+  bucket = aws_s3_bucket.secondary-backend-bucket[0].id
 
   block_public_acls   = true
   block_public_policy = true
