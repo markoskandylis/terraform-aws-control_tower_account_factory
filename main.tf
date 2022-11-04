@@ -55,7 +55,7 @@ module "aft_backend" {
   source                          = "./modules/aft-backend"
   primary_region                  = var.ct_home_region
   secondary_region                = var.tf_backend_secondary_region
-  enable_backend_secondary_region = var.enable_backend_secondary_region
+  enable_backend_secondary_region = var.aft_feature_enable_backend_secondary_region
 }
 
 module "aft_code_repositories" {
@@ -245,5 +245,5 @@ module "aft_ssm_parameters" {
   maximum_concurrent_customizations                           = var.maximum_concurrent_customizations
   github_enterprise_url                                       = var.github_enterprise_url
   aft_metrics_reporting                                       = var.aft_metrics_reporting
-  enable_backend_secondary_region                             = var.enable_backend_secondary_region
+  enable_backend_secondary_region                             = var.aft_feature_enable_backend_secondary_region
 }

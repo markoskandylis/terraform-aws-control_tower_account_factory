@@ -376,3 +376,14 @@ variable "aft_metrics_reporting" {
     error_message = "Valid values for var: aft_metrics_reporting are (true, false)."
   }
 }
+
+variable "aft_feature_enable_backend_secondary_region" {
+  description = "Enabling or disabling the deployment of backend seconday region default is true"
+  type        = bool
+  default     = true
+  validation {
+    condition     = contains([true, false], var.aft_feature_enable_backend_secondary_region)
+    error_message = "Valid values for var: enable_backend_secondary_region are (true, false)."
+  }
+}
+
