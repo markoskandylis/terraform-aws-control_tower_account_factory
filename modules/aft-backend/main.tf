@@ -258,7 +258,7 @@ resource "aws_iam_role_policy_attachment" "replication" {
   count      = var.enable_backend_secondary_region ? 1 : 0
   provider   = aws.primary_region
   role       = aws_iam_role.replication.name
-  policy_arn = aws_iam_policy.replication.arn
+  policy_arn = aws_iam_policy.replication[0].arn
 }
 
 
