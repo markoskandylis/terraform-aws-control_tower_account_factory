@@ -36,7 +36,7 @@ resource "aws_s3_bucket_replication_configuration" "primary-backend-bucket-repli
       bucket        = aws_s3_bucket.secondary-backend-bucket.arn
       storage_class = "STANDARD"
       encryption_configuration {
-        replica_kms_key_id = aws_kms_key.encrypt-secondary-region.arn
+        replica_kms_key_id = aws_kms_key.encrypt-secondary-region[0].arn
       }
     }
   }
@@ -103,7 +103,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "secondary-backend
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.encrypt-secondary-region.arn
+      kms_master_key_id = aws_kms_key.encrypt-secondary-region[0].arn
       sse_algorithm     = "aws:kms"
     }
   }
@@ -192,11 +192,11 @@ resource "aws_iam_policy" "replication" {
                         "AES256"
                     ],
                     "s3:x-amz-server-side-encryption-aws-kms-key-id": [
-                        "${aws_kms_key.encrypt-secondary-region.arn}"
+                        "${aws_kms_key.encrypt-secondary-region[0].arn}"
                     ]
                 }
             },
-            "Resource": "${aws_s3_bucket.secondary-backend-bucket.arn}/*"
+            "Resource": "${aws_s3_bucket.secondary-backend-bucket[0].arn}/*"
         },
         {
             "Action": [
@@ -241,12 +241,12 @@ resource "aws_iam_policy" "replication" {
                 "StringLike": {
                     "kms:ViaService": "s3.${var.secondary_region}.amazonaws.com",
                     "kms:EncryptionContext:aws:s3:arn": [
-                        "${aws_s3_bucket.secondary-backend-bucket.arn}/*"
+                        "${aws_s3_bucket.secondary-backend-bucket[0].arn}/*"
                     ]
                 }
             },
             "Resource": [
-                "${aws_kms_key.encrypt-secondary-region.arn}"
+                "${aws_kms_key.encrypt-secondary-region[0].arn}"
             ]
         }
     ]
@@ -323,5 +323,5 @@ resource "aws_kms_alias" "encrypt-alias-secondary-region" {
   provider = aws.secondary_region
 
   name          = "alias/aft-backend-${data.aws_caller_identity.current.account_id}-kms-key"
-  target_key_id = aws_kms_key.encrypt-secondary-region.key_id
+  target_key_id = aws_kms_key.encrypt-secondary-region[0].key_id
 }
