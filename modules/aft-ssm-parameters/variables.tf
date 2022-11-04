@@ -253,3 +253,10 @@ variable "aft_version" {
 variable "aft_metrics_reporting" {
   type = string
 }
+
+variable "enable_backend_secondary_region" {
+  type        = bool
+  description = "Deploys scondary region backet replication or not"
+  default     = true
+
+}

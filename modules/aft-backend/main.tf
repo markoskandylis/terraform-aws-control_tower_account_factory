@@ -17,6 +17,7 @@ resource "aws_s3_bucket" "primary-backend-bucket" {
 }
 
 resource "aws_s3_bucket_replication_configuration" "primary-backend-bucket-replication" {
+  count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.primary_region
   bucket   = aws_s3_bucket.primary-backend-bucket.id
   role     = aws_iam_role.replication.arn
@@ -78,6 +79,7 @@ resource "aws_s3_bucket_public_access_block" "primary-backend-bucket" {
 }
 
 resource "aws_s3_bucket" "secondary-backend-bucket" {
+  count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
   bucket   = "aft-backend-${data.aws_caller_identity.current.account_id}-secondary-region"
   tags = {
@@ -86,6 +88,7 @@ resource "aws_s3_bucket" "secondary-backend-bucket" {
 }
 
 resource "aws_s3_bucket_versioning" "secondary-backend-bucket-versioning" {
+  count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
   bucket   = aws_s3_bucket.secondary-backend-bucket.id
   versioning_configuration {
@@ -94,6 +97,7 @@ resource "aws_s3_bucket_versioning" "secondary-backend-bucket-versioning" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "secondary-backend-bucket-encryption" {
+  count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
   bucket   = aws_s3_bucket.secondary-backend-bucket.id
 
@@ -106,6 +110,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "secondary-backend
 }
 
 resource "aws_s3_bucket_acl" "secondary-backend-bucket-acl" {
+  count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
   bucket   = aws_s3_bucket.secondary-backend-bucket.id
   acl      = "private"
@@ -114,6 +119,7 @@ resource "aws_s3_bucket_acl" "secondary-backend-bucket-acl" {
 
 
 resource "aws_s3_bucket_public_access_block" "secondary-backend-bucket" {
+  count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
 
   bucket = aws_s3_bucket.secondary-backend-bucket.id
@@ -143,6 +149,7 @@ POLICY
 }
 
 resource "aws_iam_policy" "replication" {
+  count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.primary_region
   name     = "aft-s3-terraform-backend-replication-policy"
 
@@ -248,6 +255,7 @@ POLICY
 }
 
 resource "aws_iam_role_policy_attachment" "replication" {
+  count      = var.enable_backend_secondary_region ? 1 : 0
   provider   = aws.primary_region
   role       = aws_iam_role.replication.name
   policy_arn = aws_iam_policy.replication.arn
@@ -299,6 +307,7 @@ resource "aws_kms_alias" "encrypt-alias-primary-region" {
 }
 
 resource "aws_kms_key" "encrypt-secondary-region" {
+  count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
 
   description             = "Terraform backend KMS key."
@@ -310,6 +319,7 @@ resource "aws_kms_key" "encrypt-secondary-region" {
 }
 
 resource "aws_kms_alias" "encrypt-alias-secondary-region" {
+  count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
 
   name          = "alias/aft-backend-${data.aws_caller_identity.current.account_id}-kms-key"

@@ -8,3 +8,9 @@ variable "primary_region" {
 variable "secondary_region" {
   type = string
 }
+
+variable "enable_backend_secondary_region" {
+  type        = bool
+  description = "Deploying secondary region backet replication or not"
+  default     = true
+}
