@@ -20,7 +20,7 @@ resource "aws_s3_bucket_replication_configuration" "primary-backend-bucket-repli
   count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.primary_region
   bucket   = aws_s3_bucket.primary-backend-bucket.id
-  role     = aws_iam_role.replication.arn
+  role     = aws_iam_role.replication[0].arn
 
   rule {
     id       = "0"
@@ -129,6 +129,7 @@ resource "aws_s3_bucket_public_access_block" "secondary-backend-bucket" {
 }
 
 resource "aws_iam_role" "replication" {
+  count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.primary_region
   name     = "aft-s3-terraform-backend-replication"
 
@@ -257,7 +258,7 @@ POLICY
 resource "aws_iam_role_policy_attachment" "replication" {
   count      = var.enable_backend_secondary_region ? 1 : 0
   provider   = aws.primary_region
-  role       = aws_iam_role.replication.name
+  role       = aws_iam_role.replication[0].name
   policy_arn = aws_iam_policy.replication[0].arn
 }
 
@@ -276,8 +277,11 @@ resource "aws_dynamodb_table" "lock-table" {
     type = "S"
   }
 
-  replica {
-    region_name = var.secondary_region
+  dynamic "replica" {
+    for_each = (var.enable_backend_secondary_region) || (var.primary_region != var.secondary_region) ? [1] : []
+    content {
+      region_name = var.secondary_region
+    }
   }
 
   tags = {
