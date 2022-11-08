@@ -326,6 +326,6 @@ resource "aws_kms_alias" "encrypt-alias-secondary-region" {
   count    = var.enable_backend_secondary_region ? 1 : 0
   provider = aws.secondary_region
 
-  name          = "alias/aft-backend-${data.aws_caller_identity.current.account_id}-kms-key"
+  name          = "alias/aft-backend-${data.aws_caller_identity.current.account_id}-secondary-region-kms-key"
   target_key_id = aws_kms_key.encrypt-secondary-region[0].key_id
 }
