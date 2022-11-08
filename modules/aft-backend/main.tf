@@ -278,7 +278,7 @@ resource "aws_dynamodb_table" "lock-table" {
   }
 
   dynamic "replica" {
-    for_each = (var.enable_backend_secondary_region) || (var.primary_region != var.secondary_region) ? [1] : []
+    for_each = (var.primary_region != var.secondary_region) && (var.enable_backend_secondary_region == true) ? [1] : []
     content {
       region_name = var.secondary_region
     }
